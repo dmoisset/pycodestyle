@@ -71,7 +71,7 @@ Or you can display how often each error was found::
 Links
 -----
 
-[![Build Status](https://api.travis-ci.org/PyCQA/pycodestyle.png?branch=master)](https://travis-ci.org/PyCQA/pycodestyle) [![Wheel Status](https://img.shields.io/pypi/wheel/pycodestyle.svg)](https://pypi.python.org/pypi/pycodestyle)
+[![Build Status](https://img.shields.io/travis/PyCQA/pycodestyle.svg)](https://travis-ci.org/PyCQA/pycodestyle) [![Wheel Status](https://img.shields.io/pypi/wheel/pycodestyle.svg)](https://pypi.python.org/pypi/pycodestyle)
 
 * `Read the documentation <https://pycodestyle.readthedocs.io/>`_
 
