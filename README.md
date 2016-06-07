@@ -73,6 +73,6 @@ Links
 
 [![Build Status](https://img.shields.io/travis/PyCQA/pycodestyle.svg)](https://travis-ci.org/PyCQA/pycodestyle) [![Wheel Status](https://img.shields.io/pypi/wheel/pycodestyle.svg)](https://pypi.python.org/pypi/pycodestyle)
 
-* `Read the documentation <https://pycodestyle.readthedocs.io/>`_
+* Read the documentation: https://pycodestyle.readthedocs.io/
 
-* `Fork me on GitHub <http://github.com/PyCQA/pycodestyle>`_
+* Fork me on GitHub: http://github.com/PyCQA/pycodestyle
