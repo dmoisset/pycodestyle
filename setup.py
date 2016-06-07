@@ -12,7 +12,7 @@ def get_version():
 
 def get_long_description():
     descr = []
-    for fname in 'README.rst', 'CHANGES.txt':
+    for fname in 'README.md', 'CHANGES.txt':
         with open(fname) as f:
             descr.append(f.read())
     return '\n\n'.join(descr)
