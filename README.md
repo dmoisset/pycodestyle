@@ -4,7 +4,7 @@ pycodestyle (formerly called pep8) - Python style guide checker
 pycodestyle is a tool to check your Python code against some of the style
 conventions in [PEP 8](http://www.python.org/dev/peps/pep-0008/).
 
-Note: This package used to be called ``pep8`` but was renamed to ``pycodestyle`` to reduce confusion. Further discussion [here](https://github.com/PyCQA/pycodestyle/issues/466).
+Note: This package used to be called ``pep8`` but was renamed to ``pycodestyle`` to reduce confusion. Further discussion can be found [in the issue where Guido requested this change](https://github.com/PyCQA/pycodestyle/issues/466), or in the lightning talk at PyCon 2016 by @IanLee1521: [slides](https://speakerdeck.com/ianlee1521/pep8-vs-pep-8) [video](https://youtu.be/PulzIT8KYLk?t=36m).
 
 Features
 --------
