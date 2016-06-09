@@ -219,11 +219,11 @@ def maximum_line_length(physical_line, max_line_length, multiline, noqa):
         if ((len(chunks) == 1 and multiline) or
             (len(chunks) == 2 and chunks[0] == '#')) and \
                 len(line) - len(chunks[-1]) < max_line_length - 7:
-            return
+            return None
         if hasattr(line, 'decode'):   # Python 2
             # The line could contain multi-byte characters
             try:
-                length = len(line.decode('utf-8'))
+                length = len(line.decode('utf-8'))  # type: ignore
             except UnicodeError:
                 pass
         if length > max_line_length:
@@ -450,7 +450,7 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
     # for each depth, collect a list of opening rows
     open_rows = [[0]]
     # for each depth, memorize the hanging indentation
-    hangs = [None]
+    hangs = [None]  # type: List[int]
     # visual indents
     indent_chances = {}
     last_indent = tokens[0][2]
@@ -1340,8 +1340,9 @@ def parse_udiff(diff, patterns=None, parent='.'):
     """Return a dictionary of matching lines."""
     # For each file of the diff, the entry key is the filename,
     # and the value is a set of row numbers to consider.
-    rv = {}
-    path = nrows = None
+    rv = {}  # type: Dict[FilePath, Set[int]]
+    path = None
+    nrows = 0
     for line in diff.splitlines():
         if nrows:
             if line[:1] != '-':
@@ -1411,7 +1412,7 @@ if COMMENT_WITH_NL:
 ##############################################################################
 
 
-_checks = {'physical_line': {}, 'logical_line': {}, 'tree': {}}
+_checks = {'physical_line': {}, 'logical_line': {}, 'tree': {}}  # type: Dict[CheckKind, CheckSet]
 
 
 def _get_parameters(function):
@@ -1472,7 +1473,7 @@ class Checker(object):
         self.verbose = options.verbose
         self.filename = filename
         # Dictionary where a checker can store its custom state.
-        self._checker_states = {}
+        self._checker_states = {}  # type: Dict[str, CheckerState]
         if filename is None:
             self.filename = 'stdin'
             self.lines = lines or []
@@ -1498,6 +1499,10 @@ class Checker(object):
         self.report = report or options.report
         self.report_error = self.report.error
         self.noqa = False
+        self.blank_lines = 0
+        self.line_number = 0
+        self.total_lines = 0
+        self.blank_before = 0
 
     def report_invalid_syntax(self):
         """Check if the syntax is valid."""
@@ -1519,7 +1524,7 @@ class Checker(object):
         line = self.lines[self.line_number]
         self.line_number += 1
         if self.indent_char is None and line[:1] in WHITESPACE:
-            self.indent_char = line[0]
+            self.indent_char = line[0]  # type: str
         return line
 
     def run_check(self, check, argument_names):
@@ -1609,14 +1614,14 @@ class Checker(object):
             self.previous_indent_level = self.indent_level
             self.previous_logical = self.logical_line
         self.blank_lines = 0
-        self.tokens = []
+        self.tokens = []  # type: List[Token]
 
     def check_ast(self):
         """Build the file's AST and run all AST checks."""
         try:
             tree = compile(''.join(self.lines), '', 'exec', PyCF_ONLY_AST)
         except (ValueError, SyntaxError, TypeError):
-            return self.report_invalid_syntax()
+            self.report_invalid_syntax()
         for name, cls, __ in self._ast_checks:
             checker = cls(tree, self.filename)
             for lineno, offset, text, check in checker.run():
@@ -1730,10 +1735,10 @@ class BaseReport(object):
         self._benchmark_keys = options.benchmark_keys
         self._ignore_code = options.ignore_code
         # Results
-        self.elapsed = 0
+        self.elapsed = 0.0
         self.total_errors = 0
         self.counters = dict.fromkeys(self._benchmark_keys, 0)
-        self.messages = {}
+        self.messages = {}  # type: Dict[str, str]
 
     def start(self):
         """Start the timer."""
@@ -1761,7 +1766,7 @@ class BaseReport(object):
         """Report an error, according to options."""
         code = text[:4]
         if self._ignore_code(code):
-            return
+            return None
         if code in self.counters:
             self.counters[code] += 1
         else:
@@ -1769,7 +1774,7 @@ class BaseReport(object):
             self.messages[code] = text[5:]
         # Don't care about expected errors or warnings
         if code in self.expected:
-            return
+            return None
         if self.print_filename and not self.file_errors:
             print(self.filename)
         self.file_errors += 1
@@ -1830,8 +1835,8 @@ class StandardReport(BaseReport):
 
     def init_file(self, filename, lines, expected, line_offset):
         """Signal a new file."""
-        self._deferred_print = []
-        return super(StandardReport, self).init_file(
+        self._deferred_print = []  # type: List[CheckReport]
+        super(StandardReport, self).init_file(
             filename, lines, expected, line_offset)
 
     def error(self, line_number, offset, text, check):
@@ -1881,7 +1886,7 @@ class DiffReport(StandardReport):
 
     def error(self, line_number, offset, text, check):
         if line_number not in self._selected[self.filename]:
-            return
+            return None
         return super(DiffReport, self).error(line_number, offset, text, check)
 
 
