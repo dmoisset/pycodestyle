@@ -1965,7 +1965,7 @@ class StyleGuide(object):
         """Check all files in this directory and all subdirectories."""
         dirname = dirname.rstrip('/')
         if self.excluded(dirname):
-            return 0
+            return
         counters = self.options.report.counters
         verbose = self.options.verbose
         filepatterns = self.options.filename
