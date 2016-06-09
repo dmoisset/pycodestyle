@@ -2220,7 +2220,7 @@ def _parse_multi_options(options, split_token=','):
     if options:
         return [o.strip() for o in options.split(split_token) if o.strip()]
     else:
-        return options
+        return []
 
 
 def _main():
