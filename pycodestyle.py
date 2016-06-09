@@ -900,7 +900,7 @@ def module_imports_on_top_of_file(
             line = line[1:]
         if line and line[0] in 'rR':
             line = line[1:]
-        return line and (line[0] == '"' or line[0] == "'")
+        return bool(line) and (line[0] == '"' or line[0] == "'")
 
     allowed_try_keywords = ('try', 'except', 'else', 'finally')
 
