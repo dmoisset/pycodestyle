@@ -1604,7 +1604,7 @@ class Checker(object):
                 print('   ' + name)
             self.init_checker_state(name, argument_names)
             for offset, text in self.run_check(check, argument_names) or ():
-                if not isinstance(offset, tuple):
+                if isinstance(offset, int):
                     for token_offset, pos in mapping:
                         if offset <= token_offset:
                             break
