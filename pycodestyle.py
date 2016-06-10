@@ -685,7 +685,7 @@ def missing_whitespace_around_operator(logical_line, tokens):
     E228: msg = fmt%(errno, errmsg)
     """
     parens = 0
-    need_space = False
+    need_space, needed_at = False, None  # type: bool, SourcePosition
     prev_type = tokenize.OP
     prev_text = prev_end = None
     for token_type, text, start, end, line in tokens:
@@ -695,19 +695,19 @@ def missing_whitespace_around_operator(logical_line, tokens):
             parens += 1
         elif text == ')':
             parens -= 1
-        if need_space:
+        if need_space or needed_at is not None:
             if start != prev_end:
                 # Found a (probably) needed space
-                if need_space is not True and not need_space[1]:
-                    yield (need_space[0],
+                if not need_space:
+                    yield (needed_at,
                            "E225 missing whitespace around operator")
-                need_space = False
+                need_space, needed_at = False, None
             elif text == '>' and prev_text in ('<', '-'):
                 # Tolerate the "<>" operator, even if running Python 3
                 # Deal with Python 3's annotated return value "->"
                 pass
             else:
-                if need_space is True or need_space[1]:
+                if need_space:
                     # A needed trailing space was not found
                     yield prev_end, "E225 missing whitespace around operator"
                 elif prev_text != '**':
@@ -716,10 +716,11 @@ def missing_whitespace_around_operator(logical_line, tokens):
                         code, optype = 'E228', 'modulo'
                     elif prev_text not in ARITHMETIC_OP:
                         code, optype = 'E227', 'bitwise or shift'
-                    yield (need_space[0], "%s missing whitespace "
+                    yield (needed_at, "%s missing whitespace "
                            "around %s operator" % (code, optype))
-                need_space = False
+                need_space, needed_at = False, None
         elif token_type == tokenize.OP and prev_end is not None:
+            space_is_optional = False
             if text == '=' and parens:
                 # Allow keyword args or defaults: foo(bar=None).
                 pass
@@ -729,16 +730,16 @@ def missing_whitespace_around_operator(logical_line, tokens):
                 # Check if the operator is being used as a binary operator
                 # Allow unary operators: -123, -x, +1.
                 # Allow argument unpacking: foo(*args, **kwargs).
-                if (prev_text in '}])' if prev_type == tokenize.OP
-                        else prev_text not in KEYWORDS):
-                    need_space = None
+                space_is_optional = (prev_text in '}])' if prev_type == tokenize.OP
+                                     else prev_text not in KEYWORDS)
             elif text in WS_OPTIONAL_OPERATORS:
-                need_space = None
+                space_is_optional = True
 
-            if need_space is None:
+            if space_is_optional:
                 # Surrounding space is optional, but ensure that
                 # trailing space matches opening space
-                need_space = (prev_end, start != prev_end)
+                need_space = start != prev_end
+                needed_at = prev_end
             elif need_space and start == prev_end:
                 # A needed opening space was not found
                 yield prev_end, "E225 missing whitespace around operator"
