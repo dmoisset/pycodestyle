@@ -616,9 +616,9 @@ def whitespace_before_parameters(logical_line, tokens):
     E211: dict ['key'] = list[index]
     E211: dict['key'] = list [index]
     """
-    prev_type, prev_text, __, prev_end, __ = tokens[0]
+    prev_type, prev_text, __, prev_end, __ = tokens[0]  # type: ignore. See https://github.com/python/mypy/issues/1332
     for index in range(1, len(tokens)):
-        token_type, text, start, end, __ = tokens[index]
+        token_type, text, start, end, __ = tokens[index]  # type: ignore. See https://github.com/python/mypy/issues/1332
         if (token_type == tokenize.OP and
             text in '([' and
             start != prev_end and
