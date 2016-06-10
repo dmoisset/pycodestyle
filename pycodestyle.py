@@ -452,7 +452,7 @@ def continued_indentation(logical_line, tokens, indent_level, hang_closing,
     # for each depth, memorize the hanging indentation
     hangs = [None]  # type: List[int]
     # visual indents
-    indent_chances = {}
+    indent_chances = {}  # type: Dict[int, object]
     last_indent = tokens[0][2]
     visual_indent = None
     last_token_multiline = False
