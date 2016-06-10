@@ -725,7 +725,11 @@ def missing_whitespace_around_operator(logical_line, tokens):
                 # Allow keyword args or defaults: foo(bar=None).
                 pass
             elif text in WS_NEEDED_OPERATORS:
-                need_space = True
+                if start == prev_end:
+                    # A needed opening space was not found
+                    yield prev_end, "E225 missing whitespace around operator"
+                else:
+                    need_space = True
             elif text in UNARY_OPERATORS:
                 # Check if the operator is being used as a binary operator
                 # Allow unary operators: -123, -x, +1.
@@ -740,10 +744,6 @@ def missing_whitespace_around_operator(logical_line, tokens):
                 # trailing space matches opening space
                 need_space = start != prev_end
                 needed_at = prev_end
-            elif need_space and start == prev_end:
-                # A needed opening space was not found
-                yield prev_end, "E225 missing whitespace around operator"
-                need_space = False
         prev_type = token_type
         prev_text = text
         prev_end = end
