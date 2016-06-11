@@ -1289,7 +1289,7 @@ else:
         """Read the value from stdin."""
         return TextIOWrapper(sys.stdin.buffer, errors='ignore').read()
 
-noqa = re.compile(r'# no(?:qa|pep8)\b', re.I).search
+noqa = re.compile(r'# no(?:qa|pep8)\b', re.I).search  # type: Callable[[str], object]
 
 
 def expand_indent(line):
@@ -1584,7 +1584,7 @@ class Checker(object):
             mapping.append((length, end))
             (prev_row, prev_col) = end
         self.logical_line = ''.join(logical)
-        self.noqa = bool(comments) and noqa(''.join(comments))
+        self.noqa = bool(comments and noqa(''.join(comments)))
         return mapping
 
     def check_logical(self):
@@ -1640,7 +1640,7 @@ class Checker(object):
             for token in tokengen:
                 if token[2][0] > self.total_lines:
                     return
-                self.noqa = bool(token[4]) and noqa(token[4])
+                self.noqa = bool(token[4] and noqa(token[4]))
                 self.maybe_check_physical(token)
                 yield token
         except (SyntaxError, tokenize.TokenError):
