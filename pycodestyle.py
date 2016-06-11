@@ -1718,10 +1718,10 @@ class Checker(object):
                 elif COMMENT_WITH_NL and token_type == tokenize.COMMENT:
                     if len(self.tokens) == 1:
                         # The comment also ends a physical line
-                        token = list(token)
-                        token[1] = text.rstrip('\r\n')
-                        token[3] = (token[2][0], token[2][1] + len(token[1]))
-                        self.tokens = [tuple(token)]
+                        toktype, string, start, end, line = token
+                        string = text.rstrip('\r\n')
+                        end = (start[0], start[1] + len(string))
+                        self.tokens = [(toktype, string, start, end, line)]
                         self.check_logical()
         if self.tokens:
             self.check_physical(self.lines[-1])
