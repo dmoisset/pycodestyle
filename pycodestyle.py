@@ -616,9 +616,11 @@ def whitespace_before_parameters(logical_line, tokens):
     E211: dict ['key'] = list[index]
     E211: dict['key'] = list [index]
     """
-    prev_type, prev_text, __, prev_end, __ = tokens[0]  # type: ignore. See https://github.com/python/mypy/issues/1332
+    # See https://github.com/python/mypy/issues/1332 to explain the
+    # type: ignore annotations
+    prev_type, prev_text, __, prev_end, __ = tokens[0]  # type: ignore.
     for index in range(1, len(tokens)):
-        token_type, text, start, end, __ = tokens[index]  # type: ignore. See https://github.com/python/mypy/issues/1332
+        token_type, text, start, end, __ = tokens[index]  # type: ignore.
         if (token_type == tokenize.OP and
             text in '([' and
             start != prev_end and
@@ -734,8 +736,10 @@ def missing_whitespace_around_operator(logical_line, tokens):
                 # Check if the operator is being used as a binary operator
                 # Allow unary operators: -123, -x, +1.
                 # Allow argument unpacking: foo(*args, **kwargs).
-                space_is_optional = (prev_text in '}])' if prev_type == tokenize.OP
-                                     else prev_text not in KEYWORDS)
+                space_is_optional = (
+                    prev_text in '}])'
+                    if prev_type == tokenize.OP
+                    else prev_text not in KEYWORDS)
             elif text in WS_OPTIONAL_OPERATORS:
                 space_is_optional = True
 
@@ -1289,7 +1293,8 @@ else:
         """Read the value from stdin."""
         return TextIOWrapper(sys.stdin.buffer, errors='ignore').read()
 
-noqa = re.compile(r'# no(?:qa|pep8)\b', re.I).search  # type: Callable[[str], object]
+noqa = re.compile(
+    r'# no(?:qa|pep8)\b', re.I).search  # type: Callable[[str], object]
 
 
 def expand_indent(line):
@@ -1415,7 +1420,10 @@ if COMMENT_WITH_NL:
 ##############################################################################
 
 
-_checks = {'physical_line': {}, 'logical_line': {}, 'tree': {}}  # type: Dict[CheckKind, CheckSet]
+_checks = {
+    'physical_line': {},
+    'logical_line': {},
+    'tree': {}}  # type: Dict[CheckKind, CheckSet]
 
 
 def _get_parameters(function):
@@ -1442,7 +1450,8 @@ def register_check(check, codes=None):
                 codes = ERRORCODE_REGEX.findall(check.__doc__ or '')
             _add_check(check, args[0], codes, args)
     elif inspect.isclass(check):
-        if _get_parameters(check.__init__)[:2] == ['self', 'tree']:  # type: ignore
+        if (_get_parameters(check.__init__)[:2] ==  # type: ignore
+                ['self', 'tree']):
             _add_check(check, 'tree', codes, None)
 
 
@@ -1897,14 +1906,17 @@ class DiffReport(StandardReport):
 class StyleGuide(object):
     """Initialize a PEP-8 instance with few options."""
 
-    def __init__(self, *args, checker_class=Checker, parse_argv=False, config_file=None,
-                 parser=None, **kwargs):
+    def __init__(self, *args, checker_class=Checker, parse_argv=False,
+                 config_file=None, parser=None, **kwargs):
         # build options from the command line
         self.checker_class = checker_class
         # build options from dict
         options_dict = dict(kwargs)
-        arglist = None if parse_argv else options_dict.get('paths', None)  # type: List[str]
-        options, self.paths = process_options(arglist, parse_argv, config_file, parser)
+        arglist = (
+            None if parse_argv else
+            options_dict.get('paths', None))  # type: List[str]
+        options, self.paths = process_options(
+            arglist, parse_argv, config_file, parser)
         if options_dict:
             options.__dict__.update(options_dict)
             if 'paths' in options_dict:
