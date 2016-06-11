@@ -1442,7 +1442,7 @@ def register_check(check, codes=None):
                 codes = ERRORCODE_REGEX.findall(check.__doc__ or '')
             _add_check(check, args[0], codes, args)
     elif inspect.isclass(check):
-        if _get_parameters(check.__init__)[:2] == ['self', 'tree']:
+        if _get_parameters(check.__init__)[:2] == ['self', 'tree']:  # type: ignore
             _add_check(check, 'tree', codes, None)
 
 
@@ -1452,6 +1452,7 @@ def init_checks_registry():
     The first argument name is either 'physical_line' or 'logical_line'.
     """
     mod = inspect.getmodule(register_check)
+    function = None  # type: Check
     for (name, function) in inspect.getmembers(mod, inspect.isfunction):
         register_check(function)
 init_checks_registry()
@@ -1463,7 +1464,7 @@ class Checker(object):
     def __init__(self, filename=None, lines=None,
                  options=None, report=None, **kwargs):
         if options is None:
-            options = StyleGuide(**kwargs).options
+            options = StyleGuide(**kwargs).options  # type: ignore
         else:
             assert not kwargs
         self._io_error = None
@@ -1901,10 +1902,9 @@ class StyleGuide(object):
         # build options from the command line
         self.checker_class = checker_class
         # build options from dict
-        options_dict = dict(**kwargs)
-        arglist = None if parse_argv else options_dict.get('paths', None)
-        options, self.paths = process_options(
-            arglist, parse_argv, config_file, parser)
+        options_dict = dict(kwargs)
+        arglist = None if parse_argv else options_dict.get('paths', None)  # type: List[str]
+        options, self.paths = process_options(arglist, parse_argv, config_file, parser)
         if options_dict:
             options.__dict__.update(options_dict)
             if 'paths' in options_dict:
