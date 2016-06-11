@@ -90,7 +90,7 @@ REPORT_FORMAT = {
 
 PyCF_ONLY_AST = 1024
 SINGLETONS = frozenset(['False', 'None', 'True'])
-KEYWORDS = frozenset(keyword.kwlist + ['print']) - SINGLETONS
+KEYWORDS = frozenset(list(keyword.kwlist) + ['print']) - SINGLETONS
 UNARY_OPERATORS = frozenset(['>>', '**', '*', '+', '-'])
 ARITHMETIC_OP = frozenset(['**', '*', '/', '//', '+', '-'])
 WS_OPTIONAL_OPERATORS = ARITHMETIC_OP.union(['^', '&', '|', '<<', '>>', '%'])
@@ -1489,7 +1489,7 @@ class Checker(object):
         self._checker_states = {}  # type: Dict[str, CheckerState]
         if filename is None:
             self.filename = 'stdin'
-            self.lines = lines or []
+            self.lines = lines or []  # type: List[str]
         elif filename == '-':
             self.filename = 'stdin'
             self.lines = stdin_get_value().splitlines(True)
@@ -1745,12 +1745,15 @@ class BaseReport(object):
     print_filename = False
 
     def __init__(self, options):
-        self._benchmark_keys = options.benchmark_keys
+        self._benchmark_keys = options.benchmark_keys  # type: Dict[str, str]
         self._ignore_code = options.ignore_code
         # Results
         self.elapsed = 0.0
-        self.total_errors = 0
-        self.counters = dict.fromkeys(self._benchmark_keys, 0)
+        self.total_errors = 0  # type: int
+        self.counters = {}  # type: Dict[str, int]
+        # ignored type next line because of
+        # https://github.com/python/mypy/issues/328
+        self.counters = dict.fromkeys(self._benchmark_keys, 0)  # type: ignore
         self.messages = {}  # type: Dict[str, str]
 
     def start(self):
@@ -1763,11 +1766,11 @@ class BaseReport(object):
 
     def init_file(self, filename, lines, expected, line_offset):
         """Signal a new file."""
-        self.filename = filename
+        self.filename = filename  # type: FilePath
         self.lines = lines
-        self.expected = expected or ()
-        self.line_offset = line_offset
-        self.file_errors = 0
+        self.expected = expected or ()  # type: Sequence[str]
+        self.line_offset = line_offset  # type: int
+        self.file_errors = 0  # type: int
         self.counters['files'] += 1
         self.counters['physical lines'] += len(lines)
 
@@ -1916,14 +1919,15 @@ class StyleGuide(object):
             None if parse_argv else
             options_dict.get('paths', None))  # type: List[str]
         options, self.paths = process_options(
-            arglist, parse_argv, config_file, parser)
+            arglist, parse_argv, config_file,
+            parser)  # type: Values, List[str]
         if options_dict:
             options.__dict__.update(options_dict)
             if 'paths' in options_dict:
                 self.paths = options_dict['paths']
 
-        self.runner = self.input_file
-        self.options = options
+        self.runner = self.input_file  # type: Callable[[str], int]
+        self.options = options  # type: Values
 
         if not options.reporter:
             options.reporter = BaseReport if options.quiet else StandardReport
@@ -2251,7 +2255,7 @@ def _main():
 
     if options.doctest or options.testsuite:
         from testsuite.support import run_tests
-        report = run_tests(style_guide)
+        report = run_tests(style_guide)  # type: BaseReport
     else:
         report = style_guide.check_files()
 
@@ -2262,7 +2266,7 @@ def _main():
         report.print_benchmark()
 
     if options.testsuite and not options.quiet:
-        report.print_results()
+        report.print_results()  # type: ignore
 
     if report.total_errors:
         if options.count:

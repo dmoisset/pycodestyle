@@ -17,7 +17,7 @@ class ShellTestCase(unittest.TestCase):
         self._saved_pconfig = pycodestyle.PROJECT_CONFIG
         self._saved_cpread = pycodestyle.RawConfigParser._read
         self._saved_stdin_get_value = pycodestyle.stdin_get_value
-        self._config_filenames = []
+        self._config_filenames = []  # type: List[str]
         self.stdin = ''
         sys.argv = ['pycodestyle']
         sys.stdout = PseudoFile()

@@ -38,7 +38,7 @@ class TestReport(StandardReport):
         detailed_code = '%s:%s:%s' % (code, line_number, offset + 1)
         # Don't care about expected errors or warnings
         if code in self.expected or detailed_code in self.expected:
-            return
+            return None
         self._deferred_print.append(
             (line_number, offset, detailed_code, text[5:], check.__doc__))
         self.file_errors += 1
@@ -73,9 +73,12 @@ class TestReport(StandardReport):
             self.counters['failed tests'] += 1
         return super(TestReport, self).get_file_results()
 
-    def print_results(self):
-        results = ("%(physical lines)d lines tested: %(files)d files, "
-                   "%(test cases)d test cases%%s." % self.counters)
+    def print_results(self) -> None:
+        # Next line type: ignore because of
+        # https://github.com/python/mypy/issues/1717
+        results = (
+            "%(physical lines)d lines tested: %(files)d files, "  # type:ignore
+            "%(test cases)d test cases%%s." % self.counters)
         if self.total_errors:
             print(results % ", %s failures" % self.total_errors)
         else:
@@ -197,4 +200,4 @@ def run_tests(style):
     return style.check_files()
 
 # nose should not collect these functions
-init_tests.__test__ = run_tests.__test__ = False
+init_tests.__test__ = run_tests.__test__ = False  # type: ignore
