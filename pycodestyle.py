@@ -59,8 +59,8 @@ import tokenize
 from fnmatch import fnmatch
 from optparse import OptionParser, Values
 
-from typing import (cast, Any, AnyStr, Callable, Container, Dict, Iterable, List, Optional, Sequence, Set,
-                    Tuple, Union)
+from typing import (cast, Any, AnyStr, Callable, Container, Dict, Iterable,
+                    List, Optional, Sequence, Set, Tuple, Union)
 
 try:
     from configparser import RawConfigParser  # type: ignore
@@ -194,8 +194,8 @@ def trailing_whitespace(physical_line: str) -> CheckResult:
             return 0, "W293 blank line contains whitespace"
 
 
-def trailing_blank_lines(physical_line: str, lines: List[str], line_number: int,
-                         total_lines: int) -> CheckResult:
+def trailing_blank_lines(physical_line: str, lines: List[str],
+                         line_number: int, total_lines: int) -> CheckResult:
     r"""Trailing blank lines are superfluous.
 
     Okay: spam(1)
@@ -211,8 +211,8 @@ def trailing_blank_lines(physical_line: str, lines: List[str], line_number: int,
             return len(physical_line), "W292 no newline at end of file"
 
 
-def maximum_line_length(physical_line: str, max_line_length: int, multiline: bool,
-                        noqa: bool) -> Optional[CheckResult]:
+def maximum_line_length(physical_line: str, max_line_length: int,
+                        multiline: bool, noqa: bool) -> Optional[CheckResult]:
     r"""Limit all lines to a maximum of 79 characters.
 
     There are still many devices around that are limited to 80 character
@@ -250,8 +250,8 @@ def maximum_line_length(physical_line: str, max_line_length: int, multiline: boo
 ##############################################################################
 
 
-def blank_lines(logical_line: str, blank_lines: int, indent_level: int, line_number: int,
-                blank_before: int, previous_logical: str,
+def blank_lines(logical_line: str, blank_lines: int, indent_level: int,
+                line_number: int, blank_before: int, previous_logical: str,
                 previous_indent_level: int) -> Iterable[CheckResult]:
     r"""Separate top-level function and class definitions with two blank lines.
 
@@ -343,7 +343,8 @@ def whitespace_around_keywords(logical_line: str) -> Iterable[CheckResult]:
             yield match.start(2), "E271 multiple spaces after keyword"
 
 
-def missing_whitespace_after_import_keyword(logical_line: str) -> Iterable[CheckResult]:
+def missing_whitespace_after_import_keyword(
+        logical_line: str) -> Iterable[CheckResult]:
     r"""Multiple imports in form from x import (a, b, c) should have space
     between import statement and parenthesised name list.
 
@@ -387,7 +388,8 @@ def missing_whitespace(logical_line: str) -> Iterable[CheckResult]:
 
 
 def indentation(logical_line: str, previous_logical: str, indent_char: object,
-                indent_level: int, previous_indent_level: int)-> Iterable[CheckResult]:
+                indent_level: int,
+                previous_indent_level: int) -> Iterable[CheckResult]:
     r"""Use 4 spaces per indentation level.
 
     For really old code that you don't want to mess up, you can continue to
@@ -417,8 +419,9 @@ def indentation(logical_line: str, previous_logical: str, indent_char: object,
         yield 0, tmpl % (3 + c, "unexpected indentation")
 
 
-def continued_indentation(logical_line: str, tokens: Sequence[Token], indent_level: int,
-                          hang_closing: bool, indent_char: str, noqa: bool,
+def continued_indentation(logical_line: str, tokens: Sequence[Token],
+                          indent_level: int, hang_closing: bool,
+                          indent_char: str, noqa: bool,
                           verbose: int) -> Iterable[CheckResult]:
     r"""Continuation lines indentation.
 
@@ -458,7 +461,9 @@ def continued_indentation(logical_line: str, tokens: Sequence[Token], indent_lev
     indent_next = logical_line.endswith(':')
 
     row = depth = 0
-    valid_hangs = cast(Tuple[int, ...], (4,) if indent_char != '\t' else (4, 8))
+    valid_hangs = cast(
+        Tuple[int, ...],
+        (4,) if indent_char != '\t' else (4, 8))
     # remember how many brackets were opened on each line
     parens = [0] * nrows
     # relative indents of physical lines
@@ -617,7 +622,8 @@ def continued_indentation(logical_line: str, tokens: Sequence[Token], indent_lev
         yield pos, "%s with same indent as next logical line" % code
 
 
-def whitespace_before_parameters(logical_line: str, tokens: Sequence[Token]) -> Iterable[CheckResult]:
+def whitespace_before_parameters(
+        logical_line: str, tokens: Sequence[Token]) -> Iterable[CheckResult]:
     r"""Avoid extraneous whitespace.
 
     Avoid extraneous whitespace in the following situations:
@@ -674,8 +680,8 @@ def whitespace_around_operator(logical_line: str) -> Iterable[CheckResult]:
             yield match.start(2), "E222 multiple spaces after operator"
 
 
-def missing_whitespace_around_operator(logical_line: str,
-                                       tokens: Sequence[Token]) -> Iterable[CheckResult]:
+def missing_whitespace_around_operator(
+        logical_line: str, tokens: Sequence[Token]) -> Iterable[CheckResult]:
     r"""Surround operators with a single space on either side.
 
     - Always surround these binary operators with a single space on
@@ -788,8 +794,8 @@ def whitespace_around_comma(logical_line: str) -> Iterable[CheckResult]:
             yield found, "E241 multiple spaces after '%s'" % m.group()[0]
 
 
-def whitespace_around_named_parameter_equals(logical_line: str,
-                                             tokens: Sequence[Token]) -> Iterable[CheckResult]:
+def whitespace_around_named_parameter_equals(
+        logical_line: str, tokens: Sequence[Token]) -> Iterable[CheckResult]:
     r"""Don't use spaces around the '=' sign in function arguments.
 
     Don't use spaces around the '=' sign when used to indicate a
@@ -839,7 +845,8 @@ def whitespace_around_named_parameter_equals(logical_line: str,
         prev_end = end
 
 
-def whitespace_before_comment(logical_line: str, tokens: Iterable[Token]) -> Iterable[CheckResult]:
+def whitespace_before_comment(
+        logical_line: str, tokens: Iterable[Token]) -> Iterable[CheckResult]:
     r"""Separate inline comments by at least two spaces.
 
     An inline comment is a comment on the same line as a statement.  Inline
@@ -1012,7 +1019,8 @@ def compound_statements(logical_line: str) -> Iterable[CheckResult]:
         found = line.find(';', found + 1)
 
 
-def explicit_line_join(logical_line: str, tokens: Sequence[Token]) -> Iterable[CheckResult]:
+def explicit_line_join(
+        logical_line: str, tokens: Sequence[Token]) -> Iterable[CheckResult]:
     r"""Avoid explicit line join between brackets.
 
     The preferred way of wrapping long lines is by using Python's implied line
@@ -1051,8 +1059,8 @@ def explicit_line_join(logical_line: str, tokens: Sequence[Token]) -> Iterable[C
                 parens -= 1
 
 
-def break_around_binary_operator(logical_line: str,
-                                 tokens: Sequence[Token]) -> Iterable[CheckResult]:
+def break_around_binary_operator(
+        logical_line: str, tokens: Sequence[Token]) -> Iterable[CheckResult]:
     r"""
     Avoid breaks before binary operators.
 
@@ -1101,7 +1109,8 @@ def break_around_binary_operator(logical_line: str,
             previous_text = text
 
 
-def comparison_to_singleton(logical_line: str, noqa: bool) -> Iterable[CheckResult]:
+def comparison_to_singleton(logical_line: str,
+                            noqa: bool) -> Iterable[CheckResult]:
     r"""Comparison to singletons should use "is" or "is not".
 
     Comparisons to singletons like None should always be done
@@ -1181,7 +1190,8 @@ def comparison_type(logical_line: str, noqa: bool) -> Iterable[CheckResult]:
         yield match.start(), "E721 do not compare types, use 'isinstance()'"
 
 
-def ambiguous_identifier(logical_line: str, tokens: Sequence[Token]) -> Iterable[CheckResult]:
+def ambiguous_identifier(logical_line: str,
+                         tokens: Sequence[Token]) -> Iterable[CheckResult]:
     r"""Never use the characters 'l', 'O', or 'I' as variable names.
 
     In some fonts, these characters are indistinguishable from the numerals
@@ -1233,7 +1243,8 @@ def ambiguous_identifier(logical_line: str, tokens: Sequence[Token]) -> Iterable
         prev_start = start
 
 
-def python_3000_has_key(logical_line: str, noqa: bool) -> Iterable[CheckResult]:
+def python_3000_has_key(
+        logical_line: str, noqa: bool) -> Iterable[CheckResult]:
     r"""The {}.has_key() method is removed in Python 3: use the 'in' operator.
 
     Okay: if "alph" in d:\n    print d["alph"]
@@ -1292,7 +1303,8 @@ if sys.version_info < (3,):
         """Read the source code."""
         with open(filename, 'rU') as f:
             return f.readlines()
-    isidentifier = re.compile(r'[a-zA-Z_]\w*$').match  # type: Callable[[str], object]
+    isidentifier = re.compile(
+        r'[a-zA-Z_]\w*$').match  # type: Callable[[str], object]
     stdin_get_value = sys.stdin.read  # type: Callable[[], str]
 else:
     # Python 3
@@ -1391,7 +1403,8 @@ def parse_udiff(diff: str, patterns: Optional[Iterable[FilePath]]=None,
                  if rows and filename_match(path, patterns)])
 
 
-def normalize_paths(value: Union[List[FilePath], str], parent: FilePath=os.curdir) -> List[FilePath]:
+def normalize_paths(value: Union[List[FilePath], str],
+                    parent: FilePath=os.curdir) -> List[FilePath]:
     """Parse a comma-separated list of paths.
 
     Return a list of absolute paths.
@@ -1409,7 +1422,8 @@ def normalize_paths(value: Union[List[FilePath], str], parent: FilePath=os.curdi
     return paths
 
 
-def filename_match(filename: FilePath, patterns: Optional[Iterable[FilePath]], default: bool=True) -> bool:
+def filename_match(filename: FilePath, patterns: Optional[Iterable[FilePath]],
+                   default: bool=True) -> bool:
     """Check if patterns contains a pattern that matches filename.
 
     If patterns is unspecified, this always returns True.
@@ -1464,7 +1478,8 @@ def _get_parameters(function: Callable) -> List[str]:
 
 def register_check(check: Check, codes: CheckCodes=None) -> None:
     """Register a new check object."""
-    def _add_check(check: Check, kind: CheckKind, codes: CheckCodes, args: CheckArgs) -> None:
+    def _add_check(check: Check, kind: CheckKind, codes: CheckCodes,
+                   args: CheckArgs) -> None:
         if check in _checks[kind]:
             _checks[kind][check][0].extend(codes or [])
         else:
@@ -1487,7 +1502,9 @@ def init_checks_registry() -> None:
     The first argument name is either 'physical_line' or 'logical_line'.
     """
     mod = inspect.getmodule(register_check)
-    functions = cast(Iterable[Tuple[str, 'Checker']], inspect.getmembers(mod, inspect.isfunction))
+    functions = cast(
+        Iterable[Tuple[str, 'Checker']],
+        inspect.getmembers(mod, inspect.isfunction))
     for (name, function) in functions:
         register_check(function)  # type: ignore
 init_checks_registry()
@@ -1569,7 +1586,8 @@ class Checker(object):
             self.indent_char = line[0]  # type: str
         return line
 
-    def run_check(self, check: Check, argument_names: CheckArgs) -> Iterable[CheckResult]:
+    def run_check(self, check: Check,
+                  argument_names: CheckArgs) -> Iterable[CheckResult]:
         """Run a check plugin."""
         arguments = []
         for name in argument_names:
@@ -1715,7 +1733,8 @@ class Checker(object):
                 self.line_number += 1
             self.multiline = False
 
-    def check_all(self, expected: Container[str]=None, line_offset: int=0) -> int:
+    def check_all(self, expected: Container[str]=None,
+                  line_offset: int=0) -> int:
         """Run all checks on the input file."""
         self.report.init_file(self.filename, self.lines, expected, line_offset)
         self.total_lines = len(self.lines)
@@ -1793,8 +1812,8 @@ class BaseReport(object):
         """Stop the timer."""
         self.elapsed = time.time() - self._start_time
 
-    def init_file(self, filename: FilePath, lines: Sequence[str], expected: Container[str],
-                  line_offset: int) -> None:
+    def init_file(self, filename: FilePath, lines: Sequence[str],
+                  expected: Container[str], line_offset: int) -> None:
         """Signal a new file."""
         self.filename = filename  # type: FilePath
         self.lines = lines
@@ -1808,7 +1827,8 @@ class BaseReport(object):
         """Signal a new logical line."""
         self.counters['logical lines'] += 1
 
-    def error(self, line_number: int, offset: int, text: str, check: object) -> Optional[str]:
+    def error(self, line_number: int, offset: int, text: str,
+              check: object) -> Optional[str]:
         """Report an error, according to options."""
         code = text[:4]
         if self._ignore_code(code):
@@ -1882,14 +1902,15 @@ class StandardReport(BaseReport):
         self._show_source = options.show_source
         self._show_pep8 = options.show_pep8
 
-    def init_file(self, filename: FilePath, lines: Sequence[str], expected: Container[str],
-                  line_offset: int) -> None:
+    def init_file(self, filename: FilePath, lines: Sequence[str],
+                  expected: Container[str], line_offset: int) -> None:
         """Signal a new file."""
         self._deferred_print = []  # type: List[CheckReport]
         super(StandardReport, self).init_file(
             filename, lines, expected, line_offset)
 
-    def error(self, line_number: int, offset: int, text: str, check: object) -> Optional[str]:
+    def error(self, line_number: int, offset: int, text: str,
+              check: object) -> Optional[str]:
         """Report an error, according to options."""
         code = super(StandardReport, self).error(line_number, offset,
                                                  text, check)
@@ -1934,7 +1955,8 @@ class DiffReport(StandardReport):
         super(DiffReport, self).__init__(options)
         self._selected = options.selected_lines
 
-    def error(self, line_number: int, offset: int, text: str, check: object) -> Optional[str]:
+    def error(self, line_number: int, offset: int, text: str,
+              check: object) -> Optional[str]:
         if line_number not in self._selected[self.filename]:
             return None
         return super(DiffReport, self).error(line_number, offset, text, check)
@@ -1943,9 +1965,10 @@ class DiffReport(StandardReport):
 class StyleGuide(object):
     """Initialize a PEP-8 instance with few options."""
 
-    def __init__(self, *args: object, checker_class: Callable[..., 'Checker']=Checker,
-                 parse_argv: bool=False, config_file: FilePath=None, parser: OptionParser=None,
-                 **kwargs: object) -> None:
+    def __init__(self, *args: object,
+                 checker_class: Callable[..., 'Checker']=Checker,
+                 parse_argv: bool=False, config_file: FilePath=None,
+                 parser: OptionParser=None, **kwargs: object) -> None:
         # build options from the command line
         self.checker_class = checker_class
         # build options from dict
@@ -1983,7 +2006,8 @@ class StyleGuide(object):
         options.ast_checks = self.get_checks('tree')
         self.init_report()
 
-    def init_report(self, reporter: Callable[[Values], BaseReport]=None) -> BaseReport:
+    def init_report(self, reporter: Callable[[Values],
+                    BaseReport]=None) -> BaseReport:
         """Initialize the report instance."""
         self.options.report = (reporter or self.options.reporter)(self.options)
         return self.options.report
@@ -2006,8 +2030,8 @@ class StyleGuide(object):
         report.stop()
         return report
 
-    def input_file(self, filename: str, lines: List[str]=None, expected: Container[str]=None,
-                   line_offset: int=0) -> int:
+    def input_file(self, filename: str, lines: List[str]=None,
+                   expected: Container[str]=None, line_offset: int=0) -> int:
         """Run all checks on a Python source file."""
         if self.options.verbose:
             print('checking %s' % filename)
@@ -2065,7 +2089,9 @@ class StyleGuide(object):
         return (code.startswith(self.options.ignore) and
                 not code.startswith(self.options.select))
 
-    def get_checks(self, argument_name: str) -> Sequence[Tuple[str, Check, CheckArgs]]:
+    def get_checks(
+            self,
+            argument_name: str) -> Sequence[Tuple[str, Check, CheckArgs]]:
         """Get all the checks for this category.
 
         Find all globally visible functions where the first argument name
@@ -2079,7 +2105,8 @@ class StyleGuide(object):
         return sorted(checks)
 
 
-def get_parser(prog: str='pycodestyle', version: str=__version__) -> OptionParser:
+def get_parser(prog: str='pycodestyle',
+               version: str=__version__) -> OptionParser:
     """Create the parser for the program."""
     parser = OptionParser(prog=prog, version=version,
                           usage="%prog [options] input ...")
@@ -2141,7 +2168,8 @@ def get_parser(prog: str='pycodestyle', version: str=__version__) -> OptionParse
     return parser
 
 
-def read_config(options: Values, args: List[FilePath], arglist: List[str], parser: OptionParser) -> Values:
+def read_config(options: Values, args: List[FilePath], arglist: List[str],
+                parser: OptionParser) -> Values:
     """Read and parse configurations.
 
     If a config file is specified on the command line with the "--config"
@@ -2210,7 +2238,8 @@ def read_config(options: Values, args: List[FilePath], arglist: List[str], parse
     return options
 
 
-def process_options(arglist: List[str]=None, parse_argv: bool=False, config_file: FilePath=None,
+def process_options(arglist: List[str]=None, parse_argv: bool=False,
+                    config_file: FilePath=None,
                     parser: OptionParser=None) -> Values:
     """Process options passed either via arglist or via command line args.
 
