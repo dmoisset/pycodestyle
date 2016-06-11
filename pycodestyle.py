@@ -1463,7 +1463,7 @@ class Checker(object):
     def __init__(self, filename=None, lines=None,
                  options=None, report=None, **kwargs):
         if options is None:
-            options = StyleGuide(kwargs).options
+            options = StyleGuide(**kwargs).options
         else:
             assert not kwargs
         self._io_error = None
@@ -1896,14 +1896,12 @@ class DiffReport(StandardReport):
 class StyleGuide(object):
     """Initialize a PEP-8 instance with few options."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, checker_class=Checker, parse_argv=False, config_file=None,
+                 parser=None, **kwargs):
         # build options from the command line
-        self.checker_class = kwargs.pop('checker_class', Checker)
-        parse_argv = kwargs.pop('parse_argv', False)
-        config_file = kwargs.pop('config_file', False)
-        parser = kwargs.pop('parser', None)
+        self.checker_class = checker_class
         # build options from dict
-        options_dict = dict(*args, **kwargs)
+        options_dict = dict(**kwargs)
         arglist = None if parse_argv else options_dict.get('paths', None)
         options, self.paths = process_options(
             arglist, parse_argv, config_file, parser)
