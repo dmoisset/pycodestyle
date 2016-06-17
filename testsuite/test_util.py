@@ -7,7 +7,7 @@ from pycodestyle import normalize_paths
 
 
 class UtilTestCase(unittest.TestCase):
-    def test_normalize_paths(self):
+    def test_normalize_paths(self) -> None:
         cwd = os.getcwd()
 
         self.assertEqual(normalize_paths(''), [])

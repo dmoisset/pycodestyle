@@ -17,7 +17,7 @@ def _process_file(contents):
 
 class ParserTestCase(unittest.TestCase):
 
-    def test_vanilla_ignore_parsing(self):
+    def test_vanilla_ignore_parsing(self) -> None:
         contents = b"""
 [pycodestyle]
 ignore = E226,E24
@@ -26,7 +26,7 @@ ignore = E226,E24
 
         self.assertEqual(options.ignore, ["E226", "E24"])
 
-    def test_multiline_ignore_parsing(self):
+    def test_multiline_ignore_parsing(self) -> None:
         contents = b"""
 [pycodestyle]
 ignore =
@@ -38,7 +38,7 @@ ignore =
 
         self.assertEqual(options.ignore, ["E226", "E24"])
 
-    def test_trailing_comma_ignore_parsing(self):
+    def test_trailing_comma_ignore_parsing(self) -> None:
         contents = b"""
 [pycodestyle]
 ignore = E226,
@@ -48,7 +48,7 @@ ignore = E226,
 
         self.assertEqual(options.ignore, ["E226"])
 
-    def test_multiline_trailing_comma_ignore_parsing(self):
+    def test_multiline_trailing_comma_ignore_parsing(self) -> None:
         contents = b"""
 [pycodestyle]
 ignore =

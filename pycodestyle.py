@@ -1813,7 +1813,7 @@ class BaseReport(object):
         self.elapsed = time.time() - self._start_time
 
     def init_file(self, filename: FilePath, lines: Sequence[str],
-                  expected: Container[str], line_offset: int) -> None:
+                  expected: Sequence[str], line_offset: int) -> None:
         """Signal a new file."""
         self.filename = filename  # type: FilePath
         self.lines = lines
@@ -1903,7 +1903,7 @@ class StandardReport(BaseReport):
         self._show_pep8 = options.show_pep8
 
     def init_file(self, filename: FilePath, lines: Sequence[str],
-                  expected: Container[str], line_offset: int) -> None:
+                  expected: Sequence[str], line_offset: int) -> None:
         """Signal a new file."""
         self._deferred_print = []  # type: List[CheckReport]
         super(StandardReport, self).init_file(
@@ -1983,7 +1983,7 @@ class StyleGuide(object):
         if options_dict:
             options.__dict__.update(options_dict)
             if 'paths' in options_dict:
-                self.paths = options_dict['paths']
+                self.paths = cast(List[str], options_dict['paths'])
 
         self.runner = self.input_file  # type: Callable[[str], int]
         self.options = options  # type: Values
@@ -2240,7 +2240,7 @@ def read_config(options: Values, args: List[FilePath], arglist: List[str],
 
 def process_options(arglist: List[str]=None, parse_argv: bool=False,
                     config_file: FilePath=None,
-                    parser: OptionParser=None) -> Values:
+                    parser: OptionParser=None) -> Tuple[Values, List[str]]:
     """Process options passed either via arglist or via command line args.
 
     Passing in the ``config_file`` parameter allows other tools, such as flake8

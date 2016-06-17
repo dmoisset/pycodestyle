@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+from optparse import Values
 import os.path
 import re
 import sys
+from typing import Optional, Tuple
 
-from pycodestyle import Checker, BaseReport, StandardReport, readlines
+from pycodestyle import (Checker, BaseReport, StandardReport,
+                         StyleGuide, readlines)
 
 SELFTEST_REGEX = re.compile(r'\b(Okay|[EW]\d{3}):\s(.*)')
 ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -13,22 +16,23 @@ class PseudoFile(list):
     """Simplified file interface."""
     write = list.append
 
-    def getvalue(self):
+    def getvalue(self) -> str:
         return ''.join(self)
 
-    def flush(self):
+    def flush(self) -> None:
         pass
 
 
 class TestReport(StandardReport):
     """Collect the results for the tests."""
 
-    def __init__(self, options):
+    def __init__(self, options: Values) -> None:
         options.benchmark_keys += ['test cases', 'failed tests']
         super(TestReport, self).__init__(options)
         self._verbose = options.verbose
 
-    def error(self, line_number, offset, text, check):
+    def error(self, line_number: int, offset: int, text: str,
+              check: object) -> Optional[str]:
         """Report an error, according to options."""
         code = text[:4]
         if code in self.counters:
@@ -45,7 +49,7 @@ class TestReport(StandardReport):
         self.total_errors += 1
         return code
 
-    def get_file_results(self):
+    def get_file_results(self) -> int:
         # Check if the expected errors were found
         label = '%s:%s:1' % (self.filename, self.line_offset)
         for extended_code in self.expected:
@@ -86,7 +90,7 @@ class TestReport(StandardReport):
         print("Test failed." if self.total_errors else "Test passed.")
 
 
-def selftest(options):
+def selftest(options: Values) -> Tuple[int, int]:
     """
     Test all check functions with test cases in docstrings.
     """
@@ -128,7 +132,7 @@ def selftest(options):
     return count_failed, count_all
 
 
-def init_tests(pep8style):
+def init_tests(pep8style: StyleGuide) -> None:
     """
     Initialize testing framework.
 
@@ -149,7 +153,7 @@ def init_tests(pep8style):
     report = pep8style.init_report(TestReport)
     runner = pep8style.input_file
 
-    def run_tests(filename):
+    def run_tests(filename: str) -> int:
         """Run all the tests from a file."""
         lines = readlines(filename) + ['#:\n']
         line_offset = 0
@@ -182,7 +186,7 @@ def init_tests(pep8style):
     pep8style.runner = run_tests
 
 
-def run_tests(style):
+def run_tests(style: StyleGuide) -> BaseReport:
     options = style.options
     if options.doctest:
         import doctest

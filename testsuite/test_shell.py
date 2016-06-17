@@ -10,7 +10,7 @@ from testsuite.support import ROOT_DIR, PseudoFile
 class ShellTestCase(unittest.TestCase):
     """Test the usual CLI options and output."""
 
-    def setUp(self):
+    def setUp(self) -> None:
         self._saved_argv = sys.argv
         self._saved_stdout = sys.stdout
         self._saved_stderr = sys.stderr
@@ -23,12 +23,12 @@ class ShellTestCase(unittest.TestCase):
         sys.stdout = PseudoFile()
         sys.stderr = PseudoFile()
 
-        def fake_config_parser_read(cp, fp, filename):
+        def fake_config_parser_read(cp, fp, filename: str) -> None:
             self._config_filenames.append(filename)
         pycodestyle.RawConfigParser._read = fake_config_parser_read
         pycodestyle.stdin_get_value = self.stdin_get_value
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         sys.argv = self._saved_argv
         sys.stdout = self._saved_stdout
         sys.stderr = self._saved_stderr
@@ -36,7 +36,7 @@ class ShellTestCase(unittest.TestCase):
         pycodestyle.RawConfigParser._read = self._saved_cpread
         pycodestyle.stdin_get_value = self._saved_stdin_get_value
 
-    def stdin_get_value(self):
+    def stdin_get_value(self) -> None:
         return self.stdin
 
     def pycodestyle(self, *args):
@@ -49,7 +49,7 @@ class ShellTestCase(unittest.TestCase):
             errorcode = sys.exc_info()[1].code
         return sys.stdout.getvalue(), sys.stderr.getvalue(), errorcode
 
-    def test_print_usage(self):
+    def test_print_usage(self) -> None:
         stdout, stderr, errcode = self.pycodestyle('--help')
         self.assertFalse(errcode)
         self.assertFalse(stderr)
@@ -71,7 +71,7 @@ class ShellTestCase(unittest.TestCase):
 
         self.assertFalse(self._config_filenames)
 
-    def test_check_simple(self):
+    def test_check_simple(self) -> None:
         E11 = os.path.join(ROOT_DIR, 'testsuite', 'E11.py')
         stdout, stderr, errcode = self.pycodestyle(E11)
         stdout = stdout.splitlines()
@@ -89,7 +89,7 @@ class ShellTestCase(unittest.TestCase):
                             for p in self._config_filenames]
         self.assertTrue('setup.cfg' in config_filenames)
 
-    def test_check_stdin(self):
+    def test_check_stdin(self) -> None:
         pycodestyle.PROJECT_CONFIG = ()
         stdout, stderr, errcode = self.pycodestyle('-')
         self.assertFalse(errcode)
@@ -104,14 +104,14 @@ class ShellTestCase(unittest.TestCase):
         self.assertEqual(stdout,
                          ['stdin:1:10: E401 multiple imports on one line'])
 
-    def test_check_non_existent(self):
+    def test_check_non_existent(self) -> None:
         self.stdin = 'import os, sys\n'
         stdout, stderr, errcode = self.pycodestyle('fictitious.py')
         self.assertEqual(errcode, 1)
         self.assertFalse(stderr)
         self.assertTrue(stdout.startswith('fictitious.py:1:1: E902 '))
 
-    def test_check_noarg(self):
+    def test_check_noarg(self) -> None:
         # issue #170: do not read stdin by default
         pycodestyle.PROJECT_CONFIG = ()
         stdout, stderr, errcode = self.pycodestyle()
@@ -121,7 +121,7 @@ class ShellTestCase(unittest.TestCase):
                           "pycodestyle: error: input not specified"])
         self.assertFalse(self._config_filenames)
 
-    def test_check_diff(self):
+    def test_check_diff(self) -> None:
         pycodestyle.PROJECT_CONFIG = ()
         diff_lines = [
             "--- testsuite/E11.py	2006-06-01 08:49:50 +0500",

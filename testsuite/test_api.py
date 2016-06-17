@@ -22,7 +22,7 @@ class DummyChecker(object):
 class APITestCase(unittest.TestCase):
     """Test the public methods."""
 
-    def setUp(self):
+    def setUp(self) -> None:
         self._saved_stdout = sys.stdout
         self._saved_stderr = sys.stderr
         self._saved_checks = pycodestyle._checks
@@ -33,15 +33,15 @@ class APITestCase(unittest.TestCase):
             for (k, v) in self._saved_checks.items()
         )
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         sys.stdout = self._saved_stdout
         sys.stderr = self._saved_stderr
         pycodestyle._checks = self._saved_checks
 
-    def reset(self):
+    def reset(self) -> None:
         del sys.stdout[:], sys.stderr[:]
 
-    def test_register_physical_check(self):
+    def test_register_physical_check(self) -> None:
         def check_dummy(physical_line, line_number):
             if False:
                 yield
@@ -56,7 +56,7 @@ class APITestCase(unittest.TestCase):
         self.assertTrue(any(func == check_dummy
                             for name, func, args in options.physical_checks))
 
-    def test_register_logical_check(self):
+    def test_register_logical_check(self) -> None:
         def check_dummy(logical_line, tokens):
             if False:
                 yield
@@ -77,7 +77,7 @@ class APITestCase(unittest.TestCase):
         self.assertTrue(any(func == check_dummy
                             for name, func, args in options.logical_checks))
 
-    def test_register_ast_check(self):
+    def test_register_ast_check(self) -> None:
         pycodestyle.register_check(DummyChecker, ['Z701'])
 
         self.assertTrue(DummyChecker in pycodestyle._checks['tree'])
@@ -89,7 +89,7 @@ class APITestCase(unittest.TestCase):
         self.assertTrue(any(cls == DummyChecker
                             for name, cls, args in options.ast_checks))
 
-    def test_register_invalid_check(self):
+    def test_register_invalid_check(self) -> None:
         class InvalidChecker(DummyChecker):
             def __init__(self, filename):
                 pass
@@ -106,7 +106,7 @@ class APITestCase(unittest.TestCase):
 
         self.assertRaises(TypeError, pycodestyle.register_check)
 
-    def test_styleguide(self):
+    def test_styleguide(self) -> None:
         report = pycodestyle.StyleGuide().check_files()
         self.assertEqual(report.total_errors, 0)
         self.assertFalse(sys.stdout)
@@ -137,7 +137,7 @@ class APITestCase(unittest.TestCase):
         self.assertFalse(sys.stderr)
         self.reset()
 
-    def test_styleguide_options(self):
+    def test_styleguide_options(self) -> None:
         # Instantiate a simple checker
         pep8style = pycodestyle.StyleGuide(paths=[E11])
 
@@ -169,7 +169,7 @@ class APITestCase(unittest.TestCase):
         self.assertEqual(pep8style.options.ignore, ('E226', 'E24'))
         self.assertEqual(pep8style.options.max_line_length, 79)
 
-    def test_styleguide_ignore_code(self):
+    def test_styleguide_ignore_code(self) -> None:
         def parse_argv(argstring):
             _saved_argv = sys.argv
             sys.argv = shlex.split('pycodestyle %s /dev/null' % argstring)
@@ -231,7 +231,7 @@ class APITestCase(unittest.TestCase):
         self.assertFalse(pep8style.ignore_code('F401'))
         self.assertTrue(pep8style.ignore_code('F402'))
 
-    def test_styleguide_excluded(self):
+    def test_styleguide_excluded(self) -> None:
         pep8style = pycodestyle.StyleGuide(paths=[E11])
 
         self.assertFalse(pep8style.excluded('./foo/bar'))
@@ -248,7 +248,7 @@ class APITestCase(unittest.TestCase):
         self.assertFalse(pep8style.excluded('./CVSoup'))
         self.assertFalse(pep8style.excluded('./CVS/subdir'))
 
-    def test_styleguide_checks(self):
+    def test_styleguide_checks(self) -> None:
         pep8style = pycodestyle.StyleGuide(paths=[E11])
 
         # Default lists of checkers
@@ -289,7 +289,7 @@ class APITestCase(unittest.TestCase):
         self.assertFalse(any(func == pycodestyle.indentation
                              for name, func, args in options.logical_checks))
 
-    def test_styleguide_init_report(self):
+    def test_styleguide_init_report(self) -> None:
         style = pycodestyle.StyleGuide(paths=[E11])
 
         standard_report = pycodestyle.StandardReport
@@ -308,7 +308,7 @@ class APITestCase(unittest.TestCase):
         self.assertEqual(type(style.options.report), MinorityReport)
         self.assertEqual(style.options.reporter, MinorityReport)
 
-    def test_styleguide_check_files(self):
+    def test_styleguide_check_files(self) -> None:
         pep8style = pycodestyle.StyleGuide(paths=[E11])
 
         report = pep8style.check_files()
@@ -318,7 +318,7 @@ class APITestCase(unittest.TestCase):
         # < 3.3 raises TypeError; >= 3.3 raises AttributeError
         self.assertRaises(Exception, pep8style.check_files, [42])
 
-    def test_check_unicode(self):
+    def test_check_unicode(self) -> None:
         # Do not crash if lines are Unicode (Python 2.x)
         pycodestyle.register_check(DummyChecker, ['Z701'])
         source = '#\n'
@@ -332,7 +332,7 @@ class APITestCase(unittest.TestCase):
         self.assertFalse(sys.stderr)
         self.assertEqual(count_errors, 0)
 
-    def test_check_nullbytes(self):
+    def test_check_nullbytes(self) -> None:
         pycodestyle.register_check(DummyChecker, ['Z701'])
 
         pep8style = pycodestyle.StyleGuide()
@@ -353,7 +353,7 @@ class APITestCase(unittest.TestCase):
         self.assertFalse(sys.stderr)
         self.assertEqual(count_errors, 1)
 
-    def test_styleguide_unmatched_triple_quotes(self):
+    def test_styleguide_unmatched_triple_quotes(self) -> None:
         pycodestyle.register_check(DummyChecker, ['Z701'])
         lines = [
             'def foo():\n',
@@ -367,7 +367,7 @@ class APITestCase(unittest.TestCase):
         expected = 'stdin:2:5: E901 TokenError: EOF in multi-line string'
         self.assertTrue(expected in stdout)
 
-    def test_styleguide_continuation_line_outdented(self):
+    def test_styleguide_continuation_line_outdented(self) -> None:
         pycodestyle.register_check(DummyChecker, ['Z701'])
         lines = [
             'def foo():\n',
